@@ -24,6 +24,9 @@ const adminRouter    = require('./routes/admin');
 
 const app = express();
 
+// Trust reverse proxy (like Render) to correctly resolve client IP for rate limiting
+app.set('trust proxy', 1);
+
 // ── Security headers ─────────────────────────────────────────
 app.use(helmet());
 

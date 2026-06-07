@@ -19,6 +19,8 @@ const transporter = nodemailer.createTransport({
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS,
   },
+  // Force IPv4 to prevent connection timeouts on Render (which lacks IPv6 support)
+  family: 4,
 });
 
 // Verify connection at startup (non-fatal — log and continue if SMTP is unavailable)
