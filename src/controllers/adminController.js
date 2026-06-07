@@ -346,9 +346,22 @@ async function getStats(req, res, next) {
       `SELECT COUNT(*) AS checked_in FROM tickets WHERE checked_in_at IS NOT NULL`
     );
 
+    // Count bookings per district
+    const districtResult = await pool.query(
+      `SELECT district, COUNT(*) AS count
+       FROM bookings
+       WHERE district IS NOT NULL AND district != ''
+       GROUP BY district
+       ORDER BY count DESC`
+    );
+
     const { total, pending, approved, rejected, non_rejected } = result.rows[0];
     const checked_in = parseInt(checkinResult.rows[0].checked_in, 10);
     const remaining_capacity = Math.max(0, 150 - parseInt(non_rejected, 10));
+    const districts = districtResult.rows.map((row) => ({
+      district: row.district,
+      count:    parseInt(row.count, 10),
+    }));
 
     return res.json({
       total:              parseInt(total,    10),
@@ -357,6 +370,7 @@ async function getStats(req, res, next) {
       rejected:           parseInt(rejected, 10),
       checked_in,
       remaining_capacity,
+      districts,
     });
   } catch (err) {
     next(err);
