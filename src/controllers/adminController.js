@@ -205,7 +205,7 @@ async function approveBooking(req, res, next) {
        FROM bookings b
        LEFT JOIN events e ON e.id = b.event_id
        WHERE b.id = $1
-       FOR UPDATE`,
+       FOR UPDATE OF b`,
       [id]
     );
 
@@ -272,7 +272,7 @@ async function rejectBooking(req, res, next) {
        FROM bookings b
        LEFT JOIN events e ON e.id = b.event_id
        WHERE b.id = $1
-       FOR UPDATE`,
+       FOR UPDATE OF b`,
       [id]
     );
 
