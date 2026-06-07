@@ -164,9 +164,12 @@ async function getBooking(req, res, next) {
         const uploadIndex = urlParts.indexOf('upload');
         // Public ID is everything after upload/v{version}/
         const publicIdWithExt = urlParts.slice(uploadIndex + 2).join('/');
+        // Extract the original extension (e.g. 'pdf', 'png', 'jpg')
+        const extMatch = publicIdWithExt.match(/\.([^./?]+)($|\?)/);
+        const ext = extMatch ? extMatch[1] : 'jpg';
         const publicId = publicIdWithExt.replace(/\.[^/.]+$/, ''); // remove extension
 
-        signedSlipUrl = cloudinary.utils.private_download_url(publicId, 'jpg', {
+        signedSlipUrl = cloudinary.utils.private_download_url(publicId, ext, {
           resource_type: 'auto',
           expires_at:    Math.floor(Date.now() / 1000) + 3600, // 1 hour
         });
