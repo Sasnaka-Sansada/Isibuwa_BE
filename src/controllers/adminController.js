@@ -154,28 +154,39 @@ async function getBooking(req, res, next) {
 
     const booking = result.rows[0];
 
-    // Generate signed Cloudinary URL for payment slip (1 hour expiry)
-    // This prevents raw Cloudinary URLs from being shared indefinitely
+    // Generate a signed Cloudinary delivery URL for the payment slip.
+    // We use cloudinary.url() with sign_url:true which works with
+    // publicly-uploaded resources (delivery_type 'upload').
+    // NOTE: private_download_url does NOT work here because that method
+    // targets the Download API which requires delivery_type 'private'.
     let signedSlipUrl = null;
     if (booking.payment_slip_url) {
       try {
-        // Extract public_id and resource_type from Cloudinary URL
+        // Extract resource_type and public_id from the stored Cloudinary URL
+        // Example URL: https://res.cloudinary.com/<cloud>/image/upload/v123/payment_slips/abc.jpg
+        //              or: https://res.cloudinary.com/<cloud>/raw/upload/v123/payment_slips/abc.pdf
         const urlParts = booking.payment_slip_url.split('/');
         const uploadIndex = urlParts.indexOf('upload');
-        const resourceType = urlParts[uploadIndex - 1] || 'image';
-        // Public ID is everything after upload/v{version}/
-        const publicIdWithExt = urlParts.slice(uploadIndex + 2).join('/');
-        // Extract the original extension (e.g. 'pdf', 'png', 'jpg')
-        const extMatch = publicIdWithExt.match(/\.([^./?]+)($|\?)/);
-        const ext = extMatch ? extMatch[1] : 'jpg';
-        const publicId = publicIdWithExt.replace(/\.[^/.]+$/, ''); // remove extension
+        const resourceType = urlParts[uploadIndex - 1] || 'image'; // 'image' or 'raw'
 
-        signedSlipUrl = cloudinary.utils.private_download_url(publicId, ext, {
+        // Public ID with extension is everything after upload/v{version}/
+        const publicIdWithExt = urlParts.slice(uploadIndex + 2).join('/');
+
+        // For images, cloudinary.url expects public_id WITHOUT extension
+        // For raw files (PDFs), we need the extension in the public_id
+        const isRaw = resourceType === 'raw';
+        const publicId = isRaw
+          ? publicIdWithExt                                    // keep ext for raw
+          : publicIdWithExt.replace(/\.[^/.]+$/, '');          // strip ext for images
+
+        signedSlipUrl = cloudinary.url(publicId, {
           resource_type: resourceType,
-          expires_at:    Math.floor(Date.now() / 1000) + 3600, // 1 hour
+          type:          'upload',
+          sign_url:      true,
+          secure:        true,
         });
       } catch {
-        // Fall back to original URL if signing fails
+        // Fall back to the original URL if signing fails
         signedSlipUrl = booking.payment_slip_url;
       }
     }
