@@ -159,9 +159,10 @@ async function getBooking(req, res, next) {
     let signedSlipUrl = null;
     if (booking.payment_slip_url) {
       try {
-        // Extract public_id from Cloudinary URL
+        // Extract public_id and resource_type from Cloudinary URL
         const urlParts = booking.payment_slip_url.split('/');
         const uploadIndex = urlParts.indexOf('upload');
+        const resourceType = urlParts[uploadIndex - 1] || 'image';
         // Public ID is everything after upload/v{version}/
         const publicIdWithExt = urlParts.slice(uploadIndex + 2).join('/');
         // Extract the original extension (e.g. 'pdf', 'png', 'jpg')
@@ -170,7 +171,7 @@ async function getBooking(req, res, next) {
         const publicId = publicIdWithExt.replace(/\.[^/.]+$/, ''); // remove extension
 
         signedSlipUrl = cloudinary.utils.private_download_url(publicId, ext, {
-          resource_type: 'auto',
+          resource_type: resourceType,
           expires_at:    Math.floor(Date.now() / 1000) + 3600, // 1 hour
         });
       } catch {
