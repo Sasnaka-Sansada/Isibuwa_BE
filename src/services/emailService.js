@@ -11,6 +11,7 @@
 'use strict';
 
 const transporter = require('../config/mailer');
+const QRCode      = require('qrcode');
 
 const FROM_NAME  = 'Isibuwa Festival';
 const FROM_EMAIL = process.env.MAIL_USER;
@@ -115,16 +116,46 @@ async function sendApprovalEmail(booking, ticket) {
       })
     : 'June 6, 2026';
 
+  const qrData = JSON.stringify({
+    ticket_code: ticket_code,
+    name: name,
+    email: email,
+    phone: booking.phone || 'N/A',
+    district: booking.district || 'N/A',
+    event: event_title || 'Isibuwa Festival 2026'
+  });
+
+  const qrCodeBuffer = await QRCode.toBuffer(qrData, {
+    errorCorrectionLevel: 'H',
+    margin: 1,
+    width: 300,
+    color: {
+      dark: '#000000',
+      light: '#ffffff'
+    }
+  });
+
   const bodyHtml = `
     <h2 style="margin:0 0 8px;color:#ffffff;font-size:22px;">Congratulations, ${name}! 🎉</h2>
     <p style="margin:0 0 24px;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.6;">
       Your booking for <strong style="color:#a855f7;">${event_title || 'Isibuwa Festival 2026'}</strong> has been <strong style="color:#22c55e;">approved!</strong>
-      Here is your unique ticket code — keep it safe!
+      Here is your unique ticket code and check-in QR code. Keep them safe!
     </p>
     <!-- Ticket Code Box -->
-    <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:16px;padding:32px;text-align:center;margin:0 0 28px;">
+    <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:16px;padding:24px 32px 32px;text-align:center;margin:0 0 24px;">
       <p style="margin:0 0 8px;color:rgba(255,255,255,0.7);font-size:12px;text-transform:uppercase;letter-spacing:2px;">Your Ticket Code</p>
       <p style="margin:0;color:#ffffff;font-size:36px;font-weight:900;letter-spacing:4px;font-family:monospace;">${ticket_code}</p>
+    </div>
+    <!-- QR Code Box -->
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:28px;text-align:center;margin:0 0 24px;">
+      <p style="margin:0 0 16px;color:rgba(255,255,255,0.7);font-size:12px;text-transform:uppercase;letter-spacing:2px;">Gate Entry QR Code</p>
+      <div style="background:#ffffff;padding:16px;display:inline-block;border-radius:12px;margin:0 auto 12px;">
+        <img src="cid:ticket_qrcode" alt="Ticket QR Code" style="width:200px;height:200px;display:block;margin:0;" />
+      </div>
+      <p style="margin:0;color:rgba(255,255,255,0.5);font-size:12px;line-height:1.4;">
+        Show this QR Code at the entrance for verification.<br/>
+        Ticket Ref: ${ticket_code}
+      </p>
     </div>
     <!-- Event Details -->
     <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px 24px;margin:0 0 24px;">
@@ -133,7 +164,7 @@ async function sendApprovalEmail(booking, ticket) {
       <p style="margin:0;color:#fff;font-size:15px;">📍 <strong>${event_venue || 'Deraniyagala, Kegalle'}</strong></p>
     </div>
     <p style="margin:0;color:rgba(255,255,255,0.5);font-size:14px;line-height:1.6;">
-      Please bring this ticket code (digital or printed) to the venue for entry. We can't wait to see you there! 🎵
+      Please bring either your ticket code or this QR code (digital or printed) to the venue for entry. We can't wait to see you there! 🎵
     </p>
   `;
 
@@ -142,6 +173,11 @@ async function sendApprovalEmail(booking, ticket) {
     to:      email,
     subject: `Your booking is approved! Ticket: ${ticket_code}`,
     html:    emailWrapper('Booking Approved', bodyHtml),
+    attachments: [{
+      filename: 'ticket-qrcode.png',
+      content: qrCodeBuffer,
+      cid: 'ticket_qrcode'
+    }]
   });
 }
 

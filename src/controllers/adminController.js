@@ -200,7 +200,7 @@ async function approveBooking(req, res, next) {
 
     // Lock the booking row to prevent concurrent approval/rejection
     const bookingResult = await client.query(
-      `SELECT b.id, b.name, b.email, b.status,
+      `SELECT b.id, b.name, b.email, b.phone, b.district, b.status,
               e.title AS event_title, e.date AS event_date, e.venue AS event_venue
        FROM bookings b
        LEFT JOIN events e ON e.id = b.event_id
