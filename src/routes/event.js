@@ -16,7 +16,7 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
   try {
     const eventResult = await pool.query(
-      'SELECT id, title, description, date, venue, capacity, ticket_price, artists FROM events LIMIT 1'
+      'SELECT id, title, description, date, venue, capacity, ticket_price, artists, moderators, vocalists, instrumentalists, reviewers FROM events LIMIT 1'
     );
 
     if (!eventResult.rows[0]) {

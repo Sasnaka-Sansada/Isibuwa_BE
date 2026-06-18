@@ -20,6 +20,10 @@ CREATE TABLE IF NOT EXISTS events (
   capacity      INTEGER NOT NULL DEFAULT 150,
   ticket_price  NUMERIC(10, 2),                 -- nullable = free event
   artists       JSONB DEFAULT '[]'::JSONB,       -- array of artist objects
+  moderators    JSONB DEFAULT '[]'::JSONB,
+  vocalists     JSONB DEFAULT '[]'::JSONB,
+  instrumentalists JSONB DEFAULT '[]'::JSONB,
+  reviewers     JSONB DEFAULT '[]'::JSONB,
   created_at    TIMESTAMPTZ DEFAULT NOW()
 );
 
