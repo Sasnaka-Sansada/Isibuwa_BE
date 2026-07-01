@@ -76,7 +76,7 @@ VALUES (
       "name": "Malshan Ranawella",
       "genre": "Vocalist, Violinist",
       "image": "Artisit11.jpg",
-      "district": "Badulla",
+      "district": "Kegalle",
       "bio": "Project Manager, Altria Consulting(Pvt) Ltd Vocalist, violinist"
     },
     {
@@ -127,35 +127,35 @@ VALUES (
       "name": "Chamuditha Galkaduwa",
       "genre": "Reviewer",
       "image": "Reviewer1.jpg",
-      "district": "Gampaha",
+      "district": "Colombo",
       "bio": "intern Dental Surgeon, oral and maxillofacial Unit, District General Hospital, Gampaha"
     },
     {
       "name": "Ulindu Pasandul Lenaduwa Lokuge",
       "genre": "Reviewer",
       "image": "Reviewer2.jpg",
-      "district": "Kandy",
+      "district": "Matara",
       "bio": "An esteemed judge renowned for her deep appreciation of vocal artistry and ensemble performance."
     },
     {
       "name": "Dunya Kodithuwakki",
       "genre": "Reviewer",
       "image": "Reviewer3.jpg",
-      "district": "Galle",
+      "district": "Gampaha",
       "bio": "A celebrated musicologist specialising in South Asian classical traditions and fusion genres."
     },
     {
       "name": "W.A.Vijini Thisarani",
       "genre": "Reviewer",
       "image": "Reviewer4.jpg",
-      "district": "Rathnapura",
+      "district": "Kurunegala",
       "bio": "A seasoned panel member with decades of experience evaluating orchestral and folk performances."
     },
     {
       "name": "W.Navodi Vindhya Waduge",
       "genre": "Reviewer",
       "image": "Reviewer5.jpg",
-      "district": "Kegalle",
+      "district": "Kurunegala",
       "bio": "A passionate advocate for preserving traditional Sri Lankan instruments and indigenous musical forms."
     }
   ]'::JSONB
