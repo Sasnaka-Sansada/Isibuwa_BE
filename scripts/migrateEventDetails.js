@@ -38,7 +38,7 @@ async function run() {
         name: 'Chamuditha Galkaduwa',
         genre: 'Reviewer',
         image: 'Reviewer1.jpg',
-        district: 'Gampaha',
+        district: 'Colombo',
         bio: 'intern Dental Surgeon, oral and maxillofacial Unit, District General Hospital, Gampaha'
       },
       {
