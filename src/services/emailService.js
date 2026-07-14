@@ -34,7 +34,7 @@ function emailWrapper(title, bodyHtml) {
           <tr>
             <td style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#a855f7 100%);padding:40px 40px 30px;text-align:center;">
               <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:800;letter-spacing:-0.5px;">🎵 Isibuwa Festival 2026</h1>
-              <p style="margin:8px 0 0;color:rgba(255,255,255,0.8);font-size:14px;">Deraniyagala · Kegalle · June 6, 2026</p>
+              <p style="margin:8px 0 0;color:rgba(255,255,255,0.8);font-size:14px;">Deraniyagala · Kegalle · July 25, 2026</p>
             </td>
           </tr>
           <!-- Body -->
@@ -113,7 +113,7 @@ async function sendApprovalEmail(booking, ticket) {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
         hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
       })
-    : 'June 6, 2026';
+    : 'July 25, 2026';
 
   const bodyHtml = `
     <h2 style="margin:0 0 8px;color:#ffffff;font-size:22px;">Congratulations, ${name}! 🎉</h2>
