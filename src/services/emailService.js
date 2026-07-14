@@ -111,9 +111,9 @@ async function sendApprovalEmail(booking, ticket) {
   const formattedDate = event_date
     ? new Date(event_date).toLocaleDateString('en-US', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        hour: '2-digit', minute: '2-digit', timeZoneName: 'short',
+        hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Colombo',
       })
-    : 'July 25, 2026';
+    : 'Saturday, July 25, 2026 at 06:00 PM';
 
   const bodyHtml = `
     <h2 style="margin:0 0 8px;color:#ffffff;font-size:22px;">Congratulations, ${name}! 🎉</h2>
