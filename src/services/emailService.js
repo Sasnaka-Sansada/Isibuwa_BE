@@ -24,31 +24,34 @@ function emailWrapper(title, bodyHtml) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 </head>
-<body style="margin:0;padding:0;background-color:#0f0a1e;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f0a1e;padding:40px 20px;">
+<body style="margin:0;padding:0;background-color:#0C0A07;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0C0A07;padding:40px 20px;">
     <tr>
       <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#1a1035;border-radius:16px;overflow:hidden;box-shadow:0 0 40px rgba(139,92,246,0.3);">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#17130D;border-radius:16px;overflow:hidden;border:1px solid #382C18;box-shadow:0 20px 50px rgba(201,146,42,0.08);">
           <!-- Header -->
           <tr>
-            <td style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#a855f7 100%);padding:40px 40px 30px;text-align:center;">
-              <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:800;letter-spacing:-0.5px;">🎵 Isibuwa Festival 2026</h1>
-              <p style="margin:8px 0 0;color:rgba(255,255,255,0.8);font-size:14px;">Deraniyagala · Kegalle · July 25, 2026</p>
+            <td style="background-color:#0C0A07;padding:40px 40px 30px;text-align:center;border-bottom:1px solid #382C18;">
+              <h1 style="margin:0;color:#F0D080;font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:600;letter-spacing:4px;text-transform:uppercase;">ISIMBUWA</h1>
+              <p style="margin:10px 0 0;color:#C4B89A;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:400;">Deraniyagala · Kegalle · July 25, 2026</p>
             </td>
           </tr>
           <!-- Body -->
           <tr>
-            <td style="padding:40px;">
+            <td style="padding:40px;background-color:#17130D;color:#FAF5E4;">
               ${bodyHtml}
             </td>
           </tr>
           <!-- Footer -->
           <tr>
-            <td style="background:#0f0a1e;padding:24px 40px;text-align:center;border-top:1px solid rgba(139,92,246,0.2);">
-              <p style="margin:0;color:rgba(255,255,255,0.4);font-size:12px;">
+            <td style="background-color:#0C0A07;padding:24px 40px;text-align:center;border-top:1px solid #382C18;">
+              <p style="margin:0;color:#C4B89A;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;font-size:12px;line-height:1.6;letter-spacing:0.5px;">
                 © 2026 Isibuwa Festival · All rights reserved<br/>
-                Questions? Email us at <a href="mailto:${FROM_EMAIL}" style="color:#a855f7;">${FROM_EMAIL}</a>
+                Questions? Email us at <a href="mailto:${FROM_EMAIL}" style="color:#C9922A;text-decoration:none;font-weight:600;">${FROM_EMAIL}</a>
               </p>
             </td>
           </tr>
@@ -71,20 +74,20 @@ async function sendBookingConfirmation(booking) {
   const { name, email, event_title } = booking;
 
   const bodyHtml = `
-    <h2 style="margin:0 0 16px;color:#ffffff;font-size:22px;">Hi ${name}! 👋</h2>
-    <p style="margin:0 0 16px;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.6;">
-      We've received your booking for <strong style="color:#a855f7;">${event_title || 'Isibuwa Festival 2026'}</strong>.
+    <h2 style="margin:0 0 16px;color:#FAF5E4;font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:600;">Hi ${name}! 👋</h2>
+    <p style="margin:0 0 20px;color:#C4B89A;font-size:15px;line-height:1.8;">
+      We've received your booking for <strong style="color:#C9922A;">${event_title || 'Isibuwa Festival 2026'}</strong>.
       Your payment slip has been submitted and is currently under review.
     </p>
-    <div style="background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);border-radius:12px;padding:20px 24px;margin:24px 0;">
-      <p style="margin:0 0 8px;color:rgba(255,255,255,0.5);font-size:12px;text-transform:uppercase;letter-spacing:1px;">Booking Summary</p>
-      <p style="margin:0 0 4px;color:#fff;font-size:15px;"><strong>Name:</strong> ${name}</p>
-      <p style="margin:0;color:#fff;font-size:15px;"><strong>Email:</strong> ${email}</p>
+    <div style="background-color:#241D13;border:1px solid #382C18;border-radius:12px;padding:20px 24px;margin:24px 0;">
+      <p style="margin:0 0 10px;color:#C9922A;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;">Booking Summary</p>
+      <p style="margin:0 0 6px;color:#FAF5E4;font-size:14px;line-height:1.5;"><strong>Name:</strong> ${name}</p>
+      <p style="margin:0;color:#FAF5E4;font-size:14px;line-height:1.5;"><strong>Email:</strong> ${email}</p>
     </div>
-    <p style="margin:0 0 16px;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.6;">
+    <p style="margin:0 0 20px;color:#C4B89A;font-size:15px;line-height:1.8;">
       Our team will review your payment slip and notify you once your booking is approved. This usually takes 24–48 hours.
     </p>
-    <p style="margin:0;color:rgba(255,255,255,0.5);font-size:14px;">
+    <p style="margin:0;color:#C4B89A;font-size:14px;font-style:italic;">
       Thank you for choosing Isibuwa Festival! 🎶
     </p>
   `;
@@ -116,24 +119,24 @@ async function sendApprovalEmail(booking, ticket) {
     : 'Saturday, July 25, 2026 at 06:00 PM';
 
   const bodyHtml = `
-    <h2 style="margin:0 0 8px;color:#ffffff;font-size:22px;">Congratulations, ${name}! 🎉</h2>
-    <p style="margin:0 0 24px;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.6;">
-      Your booking for <strong style="color:#a855f7;">${event_title || 'Isibuwa Festival 2026'}</strong> has been <strong style="color:#22c55e;">approved!</strong>
+    <h2 style="margin:0 0 8px;color:#FAF5E4;font-family:'Cormorant Garamond',Georgia,serif;font-size:28px;font-weight:600;letter-spacing:0.5px;">Congratulations, ${name}! 🎉</h2>
+    <p style="margin:0 0 24px;color:#C4B89A;font-size:15px;line-height:1.8;">
+      Your booking for <strong style="color:#C9922A;">${event_title || 'Isibuwa Festival 2026'}</strong> has been <strong style="color:#10B981;">approved!</strong>
       Here is your unique ticket code. Keep it safe!
     </p>
     <!-- Ticket Code Box -->
-    <div style="background:linear-gradient(135deg,#4f46e5,#7c3aed);border-radius:16px;padding:24px 32px 32px;text-align:center;margin:0 0 24px;">
-      <p style="margin:0 0 8px;color:rgba(255,255,255,0.7);font-size:12px;text-transform:uppercase;letter-spacing:2px;">Your Ticket Code</p>
-      <p style="margin:0;color:#ffffff;font-size:28px;font-weight:900;letter-spacing:3px;font-family:monospace;">${ticket_code}</p>
+    <div style="background-color:#241D13;border:2px dashed #C9922A;border-radius:16px;padding:28px 24px;text-align:center;margin:0 0 28px;box-shadow:inset 0 0 20px rgba(201,146,42,0.05);">
+      <p style="margin:0 0 8px;color:#C4B89A;font-size:11px;text-transform:uppercase;letter-spacing:2px;font-weight:500;">Your Ticket Code</p>
+      <p style="margin:0;color:#F0D080;font-size:32px;font-weight:800;letter-spacing:4px;font-family:Consolas, Monaco, monospace;">${ticket_code}</p>
     </div>
     <!-- Event Details -->
-    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:20px 24px;margin:0 0 24px;">
-      <p style="margin:0 0 8px;color:rgba(255,255,255,0.5);font-size:12px;text-transform:uppercase;letter-spacing:1px;">Event Details</p>
-      <p style="margin:0 0 6px;color:#fff;font-size:15px;">📅 <strong>${formattedDate}</strong></p>
-      <p style="margin:0;color:#fff;font-size:15px;">📍 <strong>${event_venue || 'Deraniyagala, Kegalle'}</strong></p>
+    <div style="background-color:#241D13;border:1px solid #382C18;border-radius:12px;padding:20px 24px;margin:0 0 24px;">
+      <p style="margin:0 0 10px;color:#C9922A;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;">Event Details</p>
+      <p style="margin:0 0 8px;color:#FAF5E4;font-size:14px;line-height:1.5;">📅 <strong style="margin-left:4px;">${formattedDate}</strong></p>
+      <p style="margin:0;color:#FAF5E4;font-size:14px;line-height:1.5;">📍 <strong style="margin-left:4px;">${event_venue || 'Deraniyagala, Kegalle'}</strong></p>
     </div>
-    <p style="margin:0;color:rgba(255,255,255,0.5);font-size:14px;line-height:1.6;">
-      Please bring your ticket code (digital or printed) to the venue for entry. We can't wait to see you there! 🎵
+    <p style="margin:0;color:#C4B89A;font-size:14px;line-height:1.8;">
+      Please bring your ticket code (digital or printed) to the venue for gate entry. We can't wait to see you there! 🎵
     </p>
   `;
 
@@ -155,20 +158,20 @@ async function sendRejectionEmail(booking) {
   const { name, email, event_title } = booking;
 
   const bodyHtml = `
-    <h2 style="margin:0 0 16px;color:#ffffff;font-size:22px;">Hi ${name},</h2>
-    <p style="margin:0 0 16px;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.6;">
-      We regret to inform you that your booking for <strong style="color:#a855f7;">${event_title || 'Isibuwa Festival 2026'}</strong> could not be approved at this time.
+    <h2 style="margin:0 0 16px;color:#FAF5E4;font-family:'Cormorant Garamond',Georgia,serif;font-size:26px;font-weight:600;">Hi ${name},</h2>
+    <p style="margin:0 0 20px;color:#C4B89A;font-size:15px;line-height:1.8;">
+      We regret to inform you that your booking for <strong style="color:#C9922A;">${event_title || 'Isibuwa Festival 2026'}</strong> could not be approved at this time.
     </p>
-    <p style="margin:0 0 16px;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.6;">
+    <p style="margin:0 0 20px;color:#C4B89A;font-size:15px;line-height:1.8;">
       This may be due to an issue with the payment slip submitted. We apologize for any inconvenience this may cause.
     </p>
-    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:12px;padding:20px 24px;margin:24px 0;">
-      <p style="margin:0;color:rgba(255,255,255,0.75);font-size:15px;line-height:1.6;">
+    <div style="background-color:#1F1414;border:1px solid #7F1D1D;border-radius:12px;padding:20px 24px;margin:24px 0;">
+      <p style="margin:0;color:#FAF5E4;font-size:14px;line-height:1.8;">
         If you believe this is an error or would like to inquire further, please reach out to the event organizers directly at 
-        <a href="mailto:${FROM_EMAIL}" style="color:#a855f7;">${FROM_EMAIL}</a>.
+        <a href="mailto:${FROM_EMAIL}" style="color:#C9922A;text-decoration:none;font-weight:600;">${FROM_EMAIL}</a>.
       </p>
     </div>
-    <p style="margin:0;color:rgba(255,255,255,0.5);font-size:14px;">
+    <p style="margin:0;color:#C4B89A;font-size:14px;font-style:italic;">
       Thank you for your interest in Isibuwa Festival 2026. We hope to see you at future events!
     </p>
   `;
