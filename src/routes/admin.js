@@ -15,6 +15,7 @@ const {
   login,
   listBookings,
   getBooking,
+  getPaymentSlip,
   approveBooking,
   rejectBooking,
   checkinBooking,
@@ -42,6 +43,7 @@ router.post('/logout', logout);
 router.get('/stats',                  auth, getStats);
 router.get('/bookings',               auth, listBookings);
 router.get('/bookings/:id',           auth, getBooking);
+router.get('/bookings/:id/slip',      auth, getPaymentSlip);
 router.patch('/bookings/:id/approve', auth, approveBooking);
 router.patch('/bookings/:id/reject',  auth, rejectBooking);
 router.patch('/bookings/:id/checkin', auth, checkinBooking);

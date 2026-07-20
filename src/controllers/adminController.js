@@ -67,6 +67,29 @@ async function login(req, res, next) {
  * GET /api/admin/bookings?search=&status=&page=1&limit=20
  * Returns paginated, searchable, filterable list of bookings.
  */
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
+
+function getTokenFromReq(req) {
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.slice(7);
+  }
+  return req.query.token || '';
+}
+
+function fetchStream(url, callback) {
+  const https = require('https');
+  const http  = require('http');
+  const lib   = url.startsWith('https') ? https : http;
+
+  lib.get(url, (res) => {
+    if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+      return fetchStream(res.headers.location, callback);
+    }
+    callback(null, res);
+  }).on('error', (err) => callback(err));
+}
+
 async function listBookings(req, res, next) {
   try {
     const page   = Math.max(1, parseInt(req.query.page,  10) || 1);
@@ -104,7 +127,7 @@ async function listBookings(req, res, next) {
     const dataResult = await pool.query(
       `SELECT
          b.id, b.name, b.email, b.phone, b.district, b.payment_reference, b.status,
-         b.submitted_at, b.reviewed_at, b.event_id,
+         b.payment_slip_url, b.submitted_at, b.reviewed_at, b.event_id,
          t.ticket_code, t.checked_in_at
        FROM bookings b
        LEFT JOIN tickets t ON t.booking_id = b.id
@@ -114,8 +137,16 @@ async function listBookings(req, res, next) {
       params
     );
 
+    const token = getTokenFromReq(req);
+    const bookings = dataResult.rows.map((row) => ({
+      ...row,
+      signed_slip_url: row.payment_slip_url
+        ? `${BACKEND_URL}/api/admin/bookings/${row.id}/slip${token ? '?token=' + encodeURIComponent(token) : ''}`
+        : null,
+    }));
+
     return res.json({
-      bookings: dataResult.rows,
+      bookings,
       total,
       page,
       limit,
@@ -130,8 +161,7 @@ async function listBookings(req, res, next) {
 
 /**
  * GET /api/admin/bookings/:id
- * Returns a single booking with ticket info and a signed Cloudinary URL
- * for the payment slip (valid for 1 hour).
+ * Returns a single booking with ticket info and proxy slip URL.
  */
 async function getBooking(req, res, next) {
   try {
@@ -153,45 +183,66 @@ async function getBooking(req, res, next) {
     }
 
     const booking = result.rows[0];
+    const token = getTokenFromReq(req);
 
-    // Generate a signed Cloudinary delivery URL for the payment slip.
-    // We use cloudinary.url() with sign_url:true which works with
-    // publicly-uploaded resources (delivery_type 'upload').
-    // NOTE: private_download_url does NOT work here because that method
-    // targets the Download API which requires delivery_type 'private'.
-    let signedSlipUrl = null;
-    if (booking.payment_slip_url) {
-      try {
-        // Extract resource_type and public_id from the stored Cloudinary URL
-        // Example URL: https://res.cloudinary.com/<cloud>/image/upload/v123/payment_slips/abc.jpg
-        //              or: https://res.cloudinary.com/<cloud>/raw/upload/v123/payment_slips/abc.pdf
-        const urlParts = booking.payment_slip_url.split('/');
-        const uploadIndex = urlParts.indexOf('upload');
-        const resourceType = urlParts[uploadIndex - 1] || 'image'; // 'image' or 'raw'
-
-        // Public ID with extension is everything after upload/v{version}/
-        const publicIdWithExt = urlParts.slice(uploadIndex + 2).join('/');
-
-        // For images, cloudinary.url expects public_id WITHOUT extension
-        // For raw files (PDFs), we need the extension in the public_id
-        const isRaw = resourceType === 'raw';
-        const publicId = isRaw
-          ? publicIdWithExt                                    // keep ext for raw
-          : publicIdWithExt.replace(/\.[^/.]+$/, '');          // strip ext for images
-
-        signedSlipUrl = cloudinary.url(publicId, {
-          resource_type: resourceType,
-          type:          'upload',
-          sign_url:      true,
-          secure:        true,
-        });
-      } catch {
-        // Fall back to the original URL if signing fails
-        signedSlipUrl = booking.payment_slip_url;
-      }
-    }
+    const signedSlipUrl = booking.payment_slip_url
+      ? `${BACKEND_URL}/api/admin/bookings/${booking.id}/slip${token ? '?token=' + encodeURIComponent(token) : ''}`
+      : null;
 
     return res.json({ ...booking, signed_slip_url: signedSlipUrl });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ── getPaymentSlip ───────────────────────────────────────────
+
+/**
+ * GET /api/admin/bookings/:id/slip
+ * Proxy endpoint to serve/stream payment slips cleanly from Cloudinary
+ * with proper headers (Content-Type, Content-Disposition).
+ */
+async function getPaymentSlip(req, res, next) {
+  try {
+    const { id } = req.params;
+    const isDownload = req.query.download === 'true' || req.query.dl === '1';
+
+    const result = await pool.query(
+      'SELECT id, name, payment_slip_url FROM bookings WHERE id = $1',
+      [id]
+    );
+
+    if (!result.rows[0] || !result.rows[0].payment_slip_url) {
+      return res.status(404).json({ error: 'Payment slip not found' });
+    }
+
+    const { name, payment_slip_url } = result.rows[0];
+
+    const urlLower = payment_slip_url.toLowerCase();
+    const isPdf = urlLower.includes('.pdf') || urlLower.includes('/raw/upload/');
+    const isPng = urlLower.endsWith('.png');
+
+    const ext = isPdf ? 'pdf' : isPng ? 'png' : 'jpg';
+    const mimeType = isPdf ? 'application/pdf' : isPng ? 'image/png' : 'image/jpeg';
+    const cleanName = (name || 'Attendee').replace(/[^a-zA-Z0-9]/g, '_');
+    const filename = `Payment_Slip_${cleanName}_${id}.${ext}`;
+
+    const dispositionType = isDownload ? 'attachment' : 'inline';
+
+    fetchStream(payment_slip_url, (err, stream) => {
+      if (err) {
+        console.error('Error fetching payment slip from Cloudinary:', err.message);
+        return res.status(500).json({ error: 'Failed to fetch payment slip file' });
+      }
+
+      if (stream.statusCode >= 400) {
+        return res.status(stream.statusCode).json({ error: 'Failed to retrieve file from storage' });
+      }
+
+      res.setHeader('Content-Type', mimeType);
+      res.setHeader('Content-Disposition', `${dispositionType}; filename="${filename}"`);
+      stream.pipe(res);
+    });
   } catch (err) {
     next(err);
   }
@@ -481,4 +532,4 @@ async function deleteBooking(req, res, next) {
   }
 }
 
-module.exports = { login, listBookings, getBooking, approveBooking, rejectBooking, checkinBooking, deleteBooking, getStats, logout };
+module.exports = { login, listBookings, getBooking, getPaymentSlip, approveBooking, rejectBooking, checkinBooking, deleteBooking, getStats, logout };
