@@ -16,8 +16,6 @@
 const pool = require('../config/db');
 const { sendBookingConfirmation } = require('../services/emailService');
 
-const MAX_CAPACITY = 150;
-
 /**
  * Creates a new booking.
  * @type {import('express').RequestHandler}
@@ -42,21 +40,22 @@ async function createBooking(req, res, next) {
     // the count and insert are atomic.
     await client.query('SELECT pg_advisory_xact_lock(12345)');
 
+    // ── Fetch event details & capacity ───────────────────────────────────
+    const eventResult = await client.query('SELECT id, title, capacity FROM events LIMIT 1');
+    const eventId       = eventResult.rows[0]?.id       || null;
+    const eventTitle    = eventResult.rows[0]?.title    || 'Isibuwa Festival 2026';
+    const eventCapacity = parseInt(eventResult.rows[0]?.capacity || 200, 10);
+
     // ── Capacity check: count non-rejected bookings ────────────────────────
     const countResult = await client.query(
       "SELECT COUNT(*) AS total FROM bookings WHERE status != 'rejected'"
     );
     const currentCount = parseInt(countResult.rows[0].total, 10);
 
-    if (currentCount >= MAX_CAPACITY) {
+    if (currentCount >= eventCapacity) {
       await client.query('ROLLBACK');
       return res.status(409).json({ error: 'Event is fully booked. No more spots are available.' });
     }
-
-    // ── Fetch event ID (use first event) ───────────────────────────────────
-    const eventResult = await client.query('SELECT id, title FROM events LIMIT 1');
-    const eventId    = eventResult.rows[0]?.id   || null;
-    const eventTitle = eventResult.rows[0]?.title || 'Isibuwa Festival 2026';
 
     // ── Insert booking row ─────────────────────────────────────────────────
     const insertResult = await client.query(

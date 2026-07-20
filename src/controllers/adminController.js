@@ -355,9 +355,13 @@ async function getStats(req, res, next) {
        ORDER BY count DESC`
     );
 
+    // Fetch event capacity
+    const eventResult = await pool.query('SELECT capacity FROM events LIMIT 1');
+    const capacity = parseInt(eventResult.rows[0]?.capacity || 200, 10);
+
     const { total, pending, approved, rejected, non_rejected } = result.rows[0];
     const checked_in = parseInt(checkinResult.rows[0].checked_in, 10);
-    const remaining_capacity = Math.max(0, 150 - parseInt(non_rejected, 10));
+    const remaining_capacity = Math.max(0, capacity - parseInt(non_rejected, 10));
     const districts = districtResult.rows.map((row) => ({
       district: row.district,
       count:    parseInt(row.count, 10),
@@ -369,6 +373,7 @@ async function getStats(req, res, next) {
       approved:           parseInt(approved, 10),
       rejected:           parseInt(rejected, 10),
       checked_in,
+      capacity,
       remaining_capacity,
       districts,
     });

@@ -157,7 +157,8 @@ async function run() {
     console.log('Seeding event details...');
     await pool.query(
       `UPDATE events 
-       SET moderators = $1, 
+       SET capacity = 200,
+           moderators = $1, 
            vocalists = $2, 
            instrumentalists = $3, 
            reviewers = $4 

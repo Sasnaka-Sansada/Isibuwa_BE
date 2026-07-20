@@ -23,7 +23,7 @@ VALUES (
   'The biggest music event of the year returns! Join us for an unforgettable night of live music, electrifying performances, and pure energy. Isibuwa Festival 2026 brings together the finest artists across genres — from Afrobeats to R&B, Jazz to Electronic — for one epic celebration. Limited spots available.',
   '2026-07-25 18:00:00+05:30',
   'Deraniyagala, Kegalle',
-  150,
+  200,
   500.00,
   '[
     {"name": "M.G. Buddhima Prasad Priyanath", "genre": "Vocalist", "image": "Artisit1.jpeg", "bio": "Talented vocalist from Rathnapura, bringing soulful classical and fusion performances."},
