@@ -417,7 +417,11 @@ async function getStats(req, res, next) {
 
     // Fetch event capacity
     const eventResult = await pool.query('SELECT capacity FROM events LIMIT 1');
-    const capacity = parseInt(eventResult.rows[0]?.capacity || 200, 10);
+    let capacity = parseInt(eventResult.rows[0]?.capacity || 200, 10);
+    if (isNaN(capacity) || capacity < 200) {
+      capacity = 200;
+      pool.query('UPDATE events SET capacity = 200 WHERE capacity < 200 OR capacity IS NULL').catch(() => {});
+    }
 
     const { total, pending, approved, rejected, non_rejected } = result.rows[0];
     const checked_in = parseInt(checkinResult.rows[0].checked_in, 10);

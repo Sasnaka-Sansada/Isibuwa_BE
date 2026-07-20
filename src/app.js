@@ -80,6 +80,16 @@ app.use((err, _req, res, _next) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Isibuwa API running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+
+  // Ensure live database capacity is set to 200
+  const pool = require('./config/db');
+  pool.query('UPDATE events SET capacity = 200 WHERE capacity < 200 OR capacity IS NULL')
+    .then((res) => {
+      if (res.rowCount > 0) {
+        console.log(`✅ Updated ${res.rowCount} event row(s) to capacity 200 in live database`);
+      }
+    })
+    .catch((err) => console.error('⚠️ Live DB capacity update note:', err.message));
 });
 
 module.exports = app; // Trigger nodemon restart

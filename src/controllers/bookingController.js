@@ -44,7 +44,11 @@ async function createBooking(req, res, next) {
     const eventResult = await client.query('SELECT id, title, capacity FROM events LIMIT 1');
     const eventId       = eventResult.rows[0]?.id       || null;
     const eventTitle    = eventResult.rows[0]?.title    || 'Isibuwa Festival 2026';
-    const eventCapacity = parseInt(eventResult.rows[0]?.capacity || 200, 10);
+    let eventCapacity   = parseInt(eventResult.rows[0]?.capacity || 200, 10);
+    if (isNaN(eventCapacity) || eventCapacity < 200) {
+      eventCapacity = 200;
+      client.query('UPDATE events SET capacity = 200 WHERE capacity < 200 OR capacity IS NULL').catch(() => {});
+    }
 
     // ── Capacity check: count non-rejected bookings ────────────────────────
     const countResult = await client.query(
