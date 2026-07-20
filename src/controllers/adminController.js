@@ -462,4 +462,23 @@ async function checkinBooking(req, res, next) {
   }
 }
 
-module.exports = { login, listBookings, getBooking, approveBooking, rejectBooking, checkinBooking, getStats, logout };
+// ── deleteBooking ────────────────────────────────────────────
+
+/**
+ * DELETE /api/admin/bookings/:id
+ * Permanently deletes a booking (and cascaded tickets/records).
+ */
+async function deleteBooking(req, res, next) {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('DELETE FROM bookings WHERE id = $1 RETURNING id', [id]);
+    if (!result.rows[0]) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+    return res.json({ message: 'Booking permanently deleted', id: parseInt(id, 10) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { login, listBookings, getBooking, approveBooking, rejectBooking, checkinBooking, deleteBooking, getStats, logout };
