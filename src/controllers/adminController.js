@@ -67,7 +67,14 @@ async function login(req, res, next) {
  * GET /api/admin/bookings?search=&status=&page=1&limit=20
  * Returns paginated, searchable, filterable list of bookings.
  */
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:3000';
+function getBaseUrl(req) {
+  if (process.env.BACKEND_URL) {
+    return process.env.BACKEND_URL.replace(/\/$/, '');
+  }
+  const host = req.get('host');
+  const protocol = req.protocol || 'https';
+  return `${protocol}://${host}`;
+}
 
 function getTokenFromReq(req) {
   const authHeader = req.headers['authorization'];
@@ -138,10 +145,11 @@ async function listBookings(req, res, next) {
     );
 
     const token = getTokenFromReq(req);
+    const baseUrl = getBaseUrl(req);
     const bookings = dataResult.rows.map((row) => ({
       ...row,
       signed_slip_url: row.payment_slip_url
-        ? `${BACKEND_URL}/api/admin/bookings/${row.id}/slip${token ? '?token=' + encodeURIComponent(token) : ''}`
+        ? `${baseUrl}/api/admin/bookings/${row.id}/slip${token ? '?token=' + encodeURIComponent(token) : ''}`
         : null,
     }));
 
@@ -184,9 +192,10 @@ async function getBooking(req, res, next) {
 
     const booking = result.rows[0];
     const token = getTokenFromReq(req);
+    const baseUrl = getBaseUrl(req);
 
     const signedSlipUrl = booking.payment_slip_url
-      ? `${BACKEND_URL}/api/admin/bookings/${booking.id}/slip${token ? '?token=' + encodeURIComponent(token) : ''}`
+      ? `${baseUrl}/api/admin/bookings/${booking.id}/slip${token ? '?token=' + encodeURIComponent(token) : ''}`
       : null;
 
     return res.json({ ...booking, signed_slip_url: signedSlipUrl });
