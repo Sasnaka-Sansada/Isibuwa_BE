@@ -21,7 +21,10 @@ const { sendBookingConfirmation } = require('../services/emailService');
  * @type {import('express').RequestHandler}
  */
 async function createBooking(req, res, next) {
-  const { name, email, phone, district, payment_reference } = req.body;
+  // ── REGISTRATION PORTAL CLOSED ──────────────────────────────────────────
+  return res.status(409).json({
+    error: 'Registrations for Isibuwa Festival 2026 are now closed. No new bookings are being accepted.',
+  });
 
   // req.file is populated by uploadSlip middleware (Cloudinary)
   if (!req.file) {
