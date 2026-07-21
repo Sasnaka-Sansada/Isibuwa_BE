@@ -135,6 +135,19 @@ async function sendApprovalEmail(booking, ticket) {
       <p style="margin:0 0 8px;color:#FAF5E4;font-size:14px;line-height:1.5;">📅 <strong style="margin-left:4px;">${formattedDate}</strong></p>
       <p style="margin:0;color:#FAF5E4;font-size:14px;line-height:1.5;">📍 <strong style="margin-left:4px;">${event_venue || 'Deraniyagala, Kegalle'}</strong></p>
     </div>
+    <!-- Highlighted WhatsApp Group Link -->
+    <div style="background-color:#142318;border:2px solid #25D366;border-radius:12px;padding:24px;margin:0 0 24px;text-align:center;box-shadow:0 4px 20px rgba(37,211,102,0.18);">
+      <p style="margin:0 0 8px;color:#25D366;font-size:12px;text-transform:uppercase;letter-spacing:2px;font-weight:700;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;">💬 Official Attendee WhatsApp Group</p>
+      <p style="margin:0 0 16px;color:#FAF5E4;font-size:15px;line-height:1.6;font-weight:600;">
+        Please join the WhatsApp group using the link below:
+      </p>
+      <a href="https://chat.whatsapp.com/IFzyh6nIPEoLgegJILFxKe?s=cl&p=a&ilr=4&amv=0" target="_blank" style="display:inline-block;background-color:#25D366;color:#0C0A07;font-weight:700;font-size:15px;padding:12px 28px;border-radius:8px;text-decoration:none;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(37,211,102,0.35);">
+        Join WhatsApp Group →
+      </a>
+      <p style="margin:14px 0 0;color:#C4B89A;font-size:12px;word-break:break-all;">
+        <a href="https://chat.whatsapp.com/IFzyh6nIPEoLgegJILFxKe?s=cl&p=a&ilr=4&amv=0" style="color:#25D366;text-decoration:underline;">https://chat.whatsapp.com/IFzyh6nIPEoLgegJILFxKe?s=cl&p=a&ilr=4&amv=0</a>
+      </p>
+    </div>
     <p style="margin:0;color:#C4B89A;font-size:14px;line-height:1.8;">
       Please bring your ticket code (digital or printed) to the venue for gate entry. We can't wait to see you there! 🎵
     </p>
