@@ -16,33 +16,46 @@ const multer                = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary            = require('../config/cloudinary');
 
-// Allowed MIME types for payment slip uploads
-const ALLOWED_MIMES = new Set(['image/jpeg', 'image/png', 'application/pdf']);
+// Allowed MIME types and extensions for payment slip uploads
+const ALLOWED_MIMES = new Set([
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/heic',
+  'image/heif',
+  'image/pjpeg',
+  'application/pdf',
+  'application/octet-stream',
+]);
+const ALLOWED_EXTS = new Set(['jpg', 'jpeg', 'png', 'pdf', 'webp', 'heic', 'heif']);
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
 
 // ── Cloudinary Storage ───────────────────────────────────────
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder:          'payment_slips',
-    allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
-    resource_type:   'auto',  // required to support PDFs
+  params: async (req, file) => {
+    const ext = (file.originalname.split('.').pop() || '').toLowerCase();
+    const isPdf = file.mimetype.toLowerCase() === 'application/pdf' || ext === 'pdf';
+    return {
+      folder: 'payment_slips',
+      resource_type: isPdf ? 'raw' : 'auto',
+      public_id: `slip_${Date.now()}_${Math.round(Math.random() * 1e9)}`,
+    };
   },
 });
 
-// ── MIME Validation via fileFilter ───────────────────────────
-// file-type@16 is the last CommonJS-compatible version.
-// We use it to sniff magic bytes from the file buffer, which
-// is more reliable than trusting the client-provided mimetype.
+// ── MIME & Extension Validation via fileFilter ───────────────────────────
 async function fileFilter(req, file, cb) {
-  // Cloudinary Storage streams the file — we rely on declared mimetype
-  // as file-type requires a Buffer. The declared mimetype from the browser
-  // is validated here; Cloudinary also enforces allowed_formats server-side.
-  const declaredMime = file.mimetype.toLowerCase();
+  const declaredMime = (file.mimetype || '').toLowerCase();
+  const ext = (file.originalname.split('.').pop() || '').toLowerCase();
 
-  if (!ALLOWED_MIMES.has(declaredMime)) {
+  const isMimeAllowed = ALLOWED_MIMES.has(declaredMime);
+  const isExtAllowed = ALLOWED_EXTS.has(ext);
+
+  if (!isMimeAllowed && !isExtAllowed) {
     return cb(
-      Object.assign(new Error('Only JPEG, PNG, and PDF files are allowed'), {
+      Object.assign(new Error('Only JPG, PNG, WEBP, HEIC, and PDF files are allowed'), {
         status: 400,
       }),
       false
@@ -73,18 +86,16 @@ function uploadSlip(req, res, next) {
   singleUpload(req, res, (err) => {
     if (!err) return next();
 
+    console.error('[UPLOAD ERROR]', err);
+
     // Multer file size exceeded
     if (err.code === 'LIMIT_FILE_SIZE') {
       return res.status(400).json({ error: 'File size must not exceed 5MB' });
     }
 
-    // Custom MIME type rejection or other Multer errors
-    if (err instanceof multer.MulterError || err.status === 400) {
-      return res.status(400).json({ error: err.message });
-    }
-
-    // Unexpected errors
-    next(err);
+    const statusCode = err.status || err.statusCode || 400;
+    const message = err.message || 'File upload failed. Please ensure your slip is a valid image or PDF under 5MB.';
+    return res.status(statusCode).json({ error: message });
   });
 }
 

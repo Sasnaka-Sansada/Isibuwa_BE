@@ -26,7 +26,10 @@ async function createBooking(req, res, next) {
     return res.status(400).json({ error: 'Payment slip is required' });
   }
 
-  const paymentSlipUrl = req.file.path; // Cloudinary secure URL
+  const paymentSlipUrl = req.file?.path || req.file?.secure_url || req.file?.url;
+  if (!paymentSlipUrl) {
+    return res.status(400).json({ error: 'Payment slip upload failed. Please try again.' });
+  }
 
   const client = await pool.connect();
   try {
