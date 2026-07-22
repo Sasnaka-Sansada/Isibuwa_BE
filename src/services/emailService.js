@@ -37,7 +37,7 @@ function emailWrapper(title, bodyHtml) {
           <tr>
             <td style="background-color:#0C0A07;padding:40px 40px 30px;text-align:center;border-bottom:1px solid #382C18;">
               <h1 style="margin:0;color:#F0D080;font-family:'Cormorant Garamond',Georgia,serif;font-size:32px;font-weight:600;letter-spacing:4px;text-transform:uppercase;">ISIMBUWA</h1>
-              <p style="margin:10px 0 0;color:#C4B89A;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:400;">Deraniyagala · Kegalle · July 25, 2026</p>
+              <p style="margin:10px 0 0;color:#C4B89A;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:400;">Aguruwella · Imbulana · Siri Sena National College · July 25, 2026</p>
             </td>
           </tr>
           <!-- Body -->
@@ -82,7 +82,8 @@ async function sendBookingConfirmation(booking) {
     <div style="background-color:#241D13;border:1px solid #382C18;border-radius:12px;padding:20px 24px;margin:24px 0;">
       <p style="margin:0 0 10px;color:#C9922A;font-size:11px;text-transform:uppercase;letter-spacing:1px;font-weight:600;font-family:'Plus Jakarta Sans','Segoe UI',Arial,sans-serif;">Booking Summary</p>
       <p style="margin:0 0 6px;color:#FAF5E4;font-size:14px;line-height:1.5;"><strong>Name:</strong> ${name}</p>
-      <p style="margin:0;color:#FAF5E4;font-size:14px;line-height:1.5;"><strong>Email:</strong> ${email}</p>
+      <p style="margin:0 0 6px;color:#FAF5E4;font-size:14px;line-height:1.5;"><strong>Email:</strong> ${email}</p>
+      <p style="margin:0;color:#FAF5E4;font-size:14px;line-height:1.5;">📍 <strong style="margin-left:4px;">${booking.event_venue || 'Aguruwella, Imbulana, Siri Sena National College'}</strong></p>
     </div>
     <p style="margin:0 0 20px;color:#C4B89A;font-size:15px;line-height:1.8;">
       Our team will review your payment slip and notify you once your booking is approved. This usually takes 24–48 hours.
