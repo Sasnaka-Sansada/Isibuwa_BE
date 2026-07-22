@@ -36,10 +36,10 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
     const ext = (file.originalname.split('.').pop() || '').toLowerCase();
-    const isPdf = file.mimetype.toLowerCase() === 'application/pdf' || ext === 'pdf';
+    const isPdf = (file.mimetype || '').toLowerCase() === 'application/pdf' || ext === 'pdf';
     return {
       folder: 'payment_slips',
-      resource_type: isPdf ? 'raw' : 'auto',
+      resource_type: isPdf ? 'raw' : 'image',
       public_id: `slip_${Date.now()}_${Math.round(Math.random() * 1e9)}`,
     };
   },

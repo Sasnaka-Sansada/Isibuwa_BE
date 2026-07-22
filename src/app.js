@@ -63,15 +63,10 @@ app.use((_req, res) => {
 // eslint-disable-next-line no-unused-vars
 app.use((err, _req, res, _next) => {
   // Log full error server-side for debugging
-  console.error('[ERROR]', err.message, process.env.NODE_ENV !== 'production' ? err.stack : '');
+  console.error('[GLOBAL ERROR HANDLER]', err);
 
   const status = err.status || err.statusCode || 500;
-
-  // Never expose stack traces to the client in production
-  const message =
-    process.env.NODE_ENV === 'production' && status === 500
-      ? 'An internal server error occurred'
-      : err.message || 'An unexpected error occurred';
+  const message = err.message || 'An unexpected server error occurred';
 
   res.status(status).json({ error: message });
 });
