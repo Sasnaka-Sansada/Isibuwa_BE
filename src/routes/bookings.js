@@ -15,11 +15,11 @@ const { createBooking }                 = require('../controllers/bookingControl
 
 const router = express.Router();
 
-// 5 submissions per 15 minutes per IP
+// 30 submissions per 15 minutes per IP
 const bookingLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max:      5,
-  message:  { error: 'Too many booking attempts. Please try again in 15 minutes.' },
+  max:      30,
+  message:  { error: 'Too many booking attempts from this IP. Please wait a few minutes before trying again.' },
   standardHeaders: true,
   legacyHeaders:   false,
 });
