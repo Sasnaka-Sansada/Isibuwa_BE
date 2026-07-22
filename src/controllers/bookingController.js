@@ -21,6 +21,8 @@ const { sendBookingConfirmation } = require('../services/emailService');
  * @type {import('express').RequestHandler}
  */
 async function createBooking(req, res, next) {
+  const { name, email, phone, district, payment_reference } = req.body || {};
+
   // req.file is populated by uploadSlip middleware (Cloudinary)
   if (!req.file) {
     return res.status(400).json({ error: 'Payment slip is required' });
