@@ -81,15 +81,15 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Isibuwa API running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
 
-  // Ensure live database capacity is set to 200
+  // Ensure live database capacity is set to 200 and venue is updated
   const pool = require('./config/db');
-  pool.query('UPDATE events SET capacity = 200 WHERE capacity < 200 OR capacity IS NULL')
+  pool.query("UPDATE events SET capacity = 200, venue = 'Aguruwella, Imbulana, Siri Sena National College'")
     .then((res) => {
       if (res.rowCount > 0) {
-        console.log(`✅ Updated ${res.rowCount} event row(s) to capacity 200 in live database`);
+        console.log(`✅ Updated ${res.rowCount} event row(s) to venue 'Aguruwella, Imbulana, Siri Sena National College' in live database`);
       }
     })
-    .catch((err) => console.error('⚠️ Live DB capacity update note:', err.message));
+    .catch((err) => console.error('⚠️ Live DB update note:', err.message));
 });
 
 module.exports = app; // Trigger nodemon restart

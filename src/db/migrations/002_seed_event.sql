@@ -22,7 +22,7 @@ VALUES (
   'Isibuwa Festival 2026',
   'The biggest music event of the year returns! Join us for an unforgettable night of live music, electrifying performances, and pure energy. Isibuwa Festival 2026 brings together the finest artists across genres — from Afrobeats to R&B, Jazz to Electronic — for one epic celebration. Limited spots available.',
   '2026-07-25 18:00:00+05:30',
-  'Deraniyagala, Kegalle',
+  'Aguruwella, Imbulana, Siri Sena National College',
   200,
   500.00,
   '[
@@ -161,7 +161,8 @@ VALUES (
   ]'::JSONB
 )
 ON CONFLICT (id) DO UPDATE 
-SET moderators = EXCLUDED.moderators,
+SET venue = EXCLUDED.venue,
+    moderators = EXCLUDED.moderators,
     vocalists = EXCLUDED.vocalists,
     instrumentalists = EXCLUDED.instrumentalists,
     reviewers = EXCLUDED.reviewers;
