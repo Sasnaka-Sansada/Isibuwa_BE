@@ -30,14 +30,11 @@ router.get('/', async (req, res, next) => {
       "SELECT COUNT(*) AS used FROM bookings WHERE status != 'rejected'"
     );
     const used      = parseInt(capacityResult.rows[0].used, 10);
-    const remaining = Math.max(0, event.capacity - used);
-    const isClosed  = remaining <= 0;
-
     return res.json({
       ...event,
-      remaining_capacity: remaining,
-      is_closed: isClosed,
-      registration_closed: isClosed,
+      remaining_capacity: 0,
+      is_closed: true,
+      registration_closed: true,
     });
   } catch (err) {
     next(err);
